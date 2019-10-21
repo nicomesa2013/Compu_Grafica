@@ -4,9 +4,9 @@ from grafica import *
 
 
 '''
-Rama : a2_2dir
+Rama :
 Autor: Nicolas Mesa Serna
-Descripcion: Movimiento en 2 direcciones rivales, implementacion de balas y colisiones
+Descripcion: Implementacion de barra de vida
 
 '''
 ANCHO = 640
@@ -23,6 +23,7 @@ class Jugador(pygame.sprite.Sprite):
         self.rect.x = 0
         self.rect.y = ALTO - self.rect.height
         self.velx = 0
+        self.vidas = 3
 
 
     def Pos(self):
@@ -83,6 +84,8 @@ if __name__ == '__main__':
 
     pygame.init()
     pantalla = pygame.display.set_mode([ANCHO,ALTO])
+
+    fuente = pygame.font.Font(None,32)
     #Inicializar jugador
     jugadores = pygame.sprite.Group()
     rivales  = pygame.sprite.Group()
@@ -90,6 +93,7 @@ if __name__ == '__main__':
     balasR = pygame.sprite.Group()
 
     j = Jugador()
+    vidas = j.vidas
     jugadores.add(j)
     rivales  = pygame.sprite.Group()
 
@@ -101,10 +105,11 @@ if __name__ == '__main__':
         r.rect.y = random.randrange(ALTO - 100)
         rivales.add(r)
 
+    fin_juego = False
     reloj = pygame.time.Clock()
     fin = False
     #Ciclo principal
-    while not fin:
+    while (not fin) and (not fin_juego):
         #Gestion de eventos
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -158,8 +163,6 @@ if __name__ == '__main__':
 
         #Gestion de rivales
         for r in rivales:
-
-            #if r in rivales:
             if r.temp == 0:
                 r.disparar = True
             if r.disparar:
@@ -172,25 +175,52 @@ if __name__ == '__main__':
         #Gestion balas rivales
         for b in balasR:
             ls = pygame.sprite.spritecollide(b,jugadores,True)
+            for e in ls:
+                balasR.remove(b)
+                vidas-=1
+                j = Jugador()
+                j.vidas = vidas
+                jugadores.add(j)
             if b.rect.y > ALTO:
                 balasR.remove(b)
 
-
-
-
-        #Gestion pantalla
-
+        if vidas < 0:
+            fin_juego = True
         #Actualizar objetos
         jugadores.update()
         rivales.update()
+
+        #
+
+
+
+
+
+
         balas.update()
         balasR.update()
+        #Gestion pantalla
+        texto = 'Vidas:'+str(j.vidas)
+        info = fuente.render(texto,True,BLANCO)
 
         #Desplegar graficos
         pantalla.fill(NEGRO)
+        pantalla.blit(info,[50,10])
         jugadores.draw(pantalla)
         rivales.draw(pantalla)
         balas.draw(pantalla)
         balasR.draw(pantalla)
         pygame.display.flip()
         reloj.tick(60)
+
+    fuente = pygame.font.Font(None,38)
+    texto = 'Fin de juego'
+    info = fuente.render(texto,True,MORADO)
+    pantalla.fill(NEGRO)
+    pantalla.blit(info,[150,150])
+    pygame.display.flip()
+    
+    while not fin:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                fin = True
