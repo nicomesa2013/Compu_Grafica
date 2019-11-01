@@ -1,0 +1,22 @@
+[info]
+img:terremogen.pgn
+mapa: ..........
+      ...###....
+      ....##....
+      ........##
+      ....aa....
+
+[.]
+tipo:vacio
+fila=0
+col=0
+
+[#]
+tipo:muro
+fila:6
+col:18
+
+[a]
+tipo:agua
+fila:3
+col:13
